@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -162,7 +163,7 @@ export default function AIAssistantSection({ userUID, userData }: AIAssistantSec
               >
                 {!message.isUser && (
                   <div className="w-10 h-10 bg-gradient-to-br from-lime-accent to-success-green rounded-xl flex items-center justify-center flex-shrink-0">
-                    <img 
+                    <Image 
                       src="/CodexLogo.png" 
                       alt="Codex AI Assistant" 
                       className="h-8 w-8 object-contain"
@@ -263,7 +264,7 @@ export default function AIAssistantSection({ userUID, userData }: AIAssistantSec
                 {message.isUser && (
                   <div className="w-10 h-10 bg-gradient-to-br from-dark-charcoal to-dark-charcoal/80 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden">
                     {userData?.profile_data?.profilePicture?.icon ? (
-                      <img
+                      <Image
                         src={userData.profile_data.profilePicture.icon}
                         alt={`${userData.profile_data?.nickname || userData.nickname || 'User'}'s profile`}
                         className="w-full h-full object-cover rounded-xl"
@@ -285,7 +286,7 @@ export default function AIAssistantSection({ userUID, userData }: AIAssistantSec
             {loading && (
               <div className="flex gap-4 justify-start">
                 <div className="w-10 h-10 bg-gradient-to-br from-lime-accent to-success-green rounded-xl flex items-center justify-center">
-                  <img 
+                  <Image 
                     src="/CodexLogo.png" 
                     alt="Codex AI Assistant" 
                     className="h-8 w-8 object-contain"

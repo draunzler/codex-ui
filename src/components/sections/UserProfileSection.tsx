@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { UserResponse } from '@/lib/api';
 import { 
@@ -307,7 +308,7 @@ export default function UserProfileSection({ userData }: UserProfileSectionProps
               <div className="p-4 bg-white/50 rounded-lg border border-gray-200 text-center">
                 <div className="w-16 h-16 bg-purple-accent rounded-full flex items-center justify-center mx-auto mb-3 overflow-hidden">
                   {userData.profile_data.profilePicture.icon ? (
-                    <img
+                    <Image
                       src={userData.profile_data.profilePicture.icon}
                       alt="Profile Picture"
                       className="w-full h-full object-cover"

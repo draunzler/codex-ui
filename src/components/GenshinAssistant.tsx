@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -257,7 +258,7 @@ export default function GenshinAssistant() {
           {/* Hero Section */}
           <div className="text-center mb-20">
             <div className="inline-flex items-center justify-center w-28 h-28 bg-gradient-lime rounded-3xl mb-10 border-4 border-white/50 backdrop-blur-sm">
-              <img 
+              <Image 
                 src="/CodexLogo.png" 
                 alt="Codex Logo" 
                 className="w-26 h-26 object-contain"
@@ -617,7 +618,7 @@ export default function GenshinAssistant() {
                       <div className="space-y-4">
                         <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-lime-accent/20">
                           <h4 className="font-bold text-dark-charcoal mb-3 flex items-center gap-2">
-                            <img 
+                            <Image 
                               src="/CodexLogo.png" 
                               alt="Codex Logo" 
                               className="w-5 h-5 object-contain"
@@ -720,7 +721,7 @@ export default function GenshinAssistant() {
                 onClick={goToHomePage}
                 title="Go to Home"
               >
-                <img 
+                <Image 
                   src="/CodexLogo.png" 
                   alt="Codex Logo" 
                   className="w-full h-full object-contain"
@@ -781,7 +782,7 @@ export default function GenshinAssistant() {
                   onClick={() => setShowProfileDropdown(!showProfileDropdown)}
                 >
                   {userData.profile_data?.profilePicture?.icon ? (
-                    <img
+                    <Image
                       src={userData.profile_data.profilePicture.icon}
                       alt={`${userData.profile_data?.nickname || userData.nickname || 'User'}'s profile`}
                       className="w-full h-full object-cover rounded-full"
@@ -805,7 +806,7 @@ export default function GenshinAssistant() {
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-12 bg-gradient-to-br from-lime-accent to-success-green rounded-xl flex items-center justify-center shadow-lg overflow-hidden border-2 border-lime-accent/30">
                           {userData.profile_data?.profilePicture?.icon ? (
-                            <img
+                            <Image
                               src={userData.profile_data.profilePicture.icon}
                               alt={`${userData.profile_data?.nickname || userData.nickname || 'User'}'s profile`}
                               className="w-full h-full object-cover rounded-lg"
@@ -960,10 +961,10 @@ export default function GenshinAssistant() {
                     <div className="mb-8">
                     <div className="flex items-center gap-6 mb-6">
                       {selectedCharacterDetails.icon_url && (
-                            <img 
+                            <Image 
                               src={selectedCharacterDetails.icon_url} 
                               alt={selectedCharacterDetails.name}
-                          className="w-24 h-24 rounded-xl border-2 border-lime-accent shadow-lg"
+                              className="w-24 h-24 rounded-xl border-2 border-lime-accent shadow-lg"
                               onError={(e) => {
                                 (e.target as HTMLImageElement).style.display = 'none';
                               }}
@@ -1091,7 +1092,7 @@ export default function GenshinAssistant() {
                                 <Card key={index} className="bg-gradient-to-br from-white to-cream-white border-2 border-lime-accent/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
                                   <CardContent className="p-4">
                                     <div className="flex items-center gap-3 mb-3">
-                                      <img
+                                      <Image
                                         src={artifact.icon}
                                         alt={artifact.type}
                                         className="w-12 h-12 rounded-lg border-2 border-lime-accent/30 shadow-md"
@@ -1207,7 +1208,7 @@ export default function GenshinAssistant() {
                               <CardContent className="p-6">
                                 <div className="flex items-center gap-4 mb-4">
                                   {selectedCharacterDetails.weapon.icon && (
-                                    <img 
+                                    <Image 
                                       src={selectedCharacterDetails.weapon.icon} 
                                       alt={selectedCharacterDetails.weapon.name}
                                       className="w-16 h-16 rounded-lg border border-gray-200"
@@ -1331,7 +1332,7 @@ export default function GenshinAssistant() {
                                   {/* Character Icon */}
                                   <div className="relative mb-4">
                                     {character.icon_url && (
-                                      <img
+                                      <Image
                                         src={character.icon_url}
                                         alt={character.name}
                                         className="w-20 h-20 mx-auto rounded-xl border-2 border-white shadow-lg"
