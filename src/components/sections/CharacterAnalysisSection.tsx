@@ -8,12 +8,9 @@ import {
   Sword, 
   Star,
   Zap,
-  Shield,
   Target,
   BarChart3,
   Users,
-  Crown,
-  Gem,
   User
 } from 'lucide-react';
 
@@ -113,11 +110,6 @@ export default function CharacterAnalysisSection({ characters, userUID }: Charac
     return Array.from({ length: rarity }, (_, i) => (
       <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
     ));
-  };
-
-  const getCharacterPortraitUrl = (characterId: number) => {
-    // Generate character portrait URL based on character ID
-    return `https://enka.network/ui/UI_AvatarIcon_${characterId.toString().replace('10000', '')}.png`;
   };
 
   const loadHybridCharacters = async () => {

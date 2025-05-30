@@ -7,7 +7,6 @@ import {
   User, 
   Calendar, 
   Star, 
-  Clock,
   Shield,
   Zap,
   Map,
@@ -36,13 +35,7 @@ export default function UserProfileSection({ userData }: UserProfileSectionProps
   // Handle both old and new API structures
   const profileData = userData.profile_data || userData;
   const explorations = userData.explorations || [];
-  const nickname = profileData.nickname || userData.nickname || 'Unknown';
-  const uid = profileData.uid || userData.uid || 0;
-  const level = profileData.level || userData.level || 0;
   const signature = profileData.signature || userData.signature;
-  const achievements = userData.achievements || (userData.profile_data?.finishAchievementNum) || 0;
-  const daysActive = userData.days_active || 0;
-  const worldLevel = userData.stats?.world_level || (userData.profile_data?.worldLevel) || 0;
   const showcaseCharacters = userData.profile_data?.showAvatarInfoList || [];
   const towerFloor = userData.profile_data?.towerFloorIndex || userData.spiral_abyss?.floor || 0;
   const towerLevel = userData.profile_data?.towerLevelIndex || userData.spiral_abyss?.chamber || 0;

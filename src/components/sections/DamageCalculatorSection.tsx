@@ -352,10 +352,6 @@ export default function DamageCalculatorSection({ userUID, characters }: DamageC
     setSelectedTeam(prev => prev.filter(c => c.name !== characterName));
   };
 
-  const toggleReaction = (reaction: string) => {
-    // This function is no longer needed as reactions are not part of the API request model
-  };
-
   const updateDamageScenario = (index: number, field: keyof DamageScenario, value: unknown) => {
     setDamageScenarios(prev => prev.map((scenario, i) => 
       i === index ? { ...scenario, [field]: value } : scenario
@@ -393,20 +389,6 @@ export default function DamageCalculatorSection({ userUID, characters }: DamageC
       case 'meta_team': return <Users className="w-4 h-4" />;
       case 'comprehensive_team': return <Sparkles className="w-4 h-4" />;
       default: return <Calculator className="w-4 h-4" />;
-    }
-  };
-
-  const getCalculationTypeDescription = (type: string) => {
-    switch (type) {
-      case 'simple': return 'Clean, accurate damage calculation using /damage/character endpoint';
-      case 'team': return 'Team damage calculation with buffs using /damage/team endpoint';
-      case 'mechanical': return 'Mathematical damage calculation using game formulas';
-      case 'advanced': return 'Complex damage calculation with team buffs and reactions';
-      case 'dynamic': return 'AI-powered calculation using web-sourced character data';
-      case 'analysis': return 'Comprehensive character build analysis with recommendations';
-      case 'meta_team': return 'Meta team composition builder using current guides';
-      case 'comprehensive_team': return 'In-depth team analysis with rotations, synergies, and optimization';
-      default: return '';
     }
   };
 
