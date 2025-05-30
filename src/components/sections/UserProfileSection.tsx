@@ -311,6 +311,8 @@ export default function UserProfileSection({ userData }: UserProfileSectionProps
                     <Image
                       src={userData.profile_data.profilePicture.icon}
                       alt="Profile Picture"
+                      width={64}
+                      height={64}
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         (e.target as HTMLImageElement).style.display = 'none';

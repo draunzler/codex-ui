@@ -261,7 +261,9 @@ export default function GenshinAssistant() {
               <Image 
                 src="/CodexLogo.png" 
                 alt="Codex Logo" 
-                className="w-26 h-26 object-contain"
+                width={40}
+                height={40}
+                className="w-full h-full object-contain"
               />
             </div>
             
@@ -621,6 +623,8 @@ export default function GenshinAssistant() {
                             <Image 
                               src="/CodexLogo.png" 
                               alt="Codex Logo" 
+                              width={20}
+                              height={20}
                               className="w-5 h-5 object-contain"
                             />
                             What happens when you create a profile?
@@ -724,6 +728,8 @@ export default function GenshinAssistant() {
                 <Image 
                   src="/CodexLogo.png" 
                   alt="Codex Logo" 
+                  width={40}
+                  height={40}
                   className="w-full h-full object-contain"
                 />
               </div>
@@ -785,6 +791,8 @@ export default function GenshinAssistant() {
                     <Image
                       src={userData.profile_data.profilePicture.icon}
                       alt={`${userData.profile_data?.nickname || userData.nickname || 'User'}'s profile`}
+                      width={48}
+                      height={48}
                       className="w-full h-full object-cover rounded-full"
                       onError={(e) => {
                         // Fallback to User icon if image fails to load
@@ -809,6 +817,8 @@ export default function GenshinAssistant() {
                             <Image
                               src={userData.profile_data.profilePicture.icon}
                               alt={`${userData.profile_data?.nickname || userData.nickname || 'User'}'s profile`}
+                              width={48}
+                              height={48}
                               className="w-full h-full object-cover rounded-lg"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
@@ -964,6 +974,8 @@ export default function GenshinAssistant() {
                             <Image 
                               src={selectedCharacterDetails.icon_url} 
                               alt={selectedCharacterDetails.name}
+                              width={96}
+                              height={96}
                               className="w-24 h-24 rounded-xl border-2 border-lime-accent shadow-lg"
                               onError={(e) => {
                                 (e.target as HTMLImageElement).style.display = 'none';
@@ -1095,6 +1107,8 @@ export default function GenshinAssistant() {
                                       <Image
                                         src={artifact.icon}
                                         alt={artifact.type}
+                                        width={48}
+                                        height={48}
                                         className="w-12 h-12 rounded-lg border-2 border-lime-accent/30 shadow-md"
                                         onError={(e) => {
                                           (e.target as HTMLImageElement).style.display = 'none';
@@ -1211,6 +1225,8 @@ export default function GenshinAssistant() {
                                     <Image 
                                       src={selectedCharacterDetails.weapon.icon} 
                                       alt={selectedCharacterDetails.weapon.name}
+                                      width={64}
+                                      height={64}
                                       className="w-16 h-16 rounded-lg border border-gray-200"
                                       onError={(e) => {
                                         (e.target as HTMLImageElement).style.display = 'none';
@@ -1335,6 +1351,8 @@ export default function GenshinAssistant() {
                                       <Image
                                         src={character.icon_url}
                                         alt={character.name}
+                                        width={80}
+                                        height={80}
                                         className="w-20 h-20 mx-auto rounded-xl border-2 border-white shadow-lg"
                                         onError={(e) => {
                                           (e.target as HTMLImageElement).style.display = 'none';

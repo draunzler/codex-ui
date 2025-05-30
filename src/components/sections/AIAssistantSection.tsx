@@ -166,6 +166,8 @@ export default function AIAssistantSection({ userUID, userData }: AIAssistantSec
                     <Image 
                       src="/CodexLogo.png" 
                       alt="Codex AI Assistant" 
+                      width={32}
+                      height={32}
                       className="h-8 w-8 object-contain"
                     />
                   </div>
@@ -267,6 +269,8 @@ export default function AIAssistantSection({ userUID, userData }: AIAssistantSec
                       <Image
                         src={userData.profile_data.profilePicture.icon}
                         alt={`${userData.profile_data?.nickname || userData.nickname || 'User'}'s profile`}
+                        width={40}
+                        height={40}
                         className="w-full h-full object-cover rounded-xl"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
@@ -289,6 +293,8 @@ export default function AIAssistantSection({ userUID, userData }: AIAssistantSec
                   <Image 
                     src="/CodexLogo.png" 
                     alt="Codex AI Assistant" 
+                    width={32}
+                    height={32}
                     className="h-8 w-8 object-contain"
                   />
                 </div>
