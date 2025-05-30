@@ -106,7 +106,7 @@ export default function InteractiveMap({ selectedMaterials, showRoute, farmingRo
               )}
             </div>
             <div className="text-xs text-[#72383D] mt-2">
-              Use the map's search function to find these materials
+              Use the map&apos;s search function to find these materials
             </div>
           </div>
         </div>

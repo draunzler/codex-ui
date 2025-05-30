@@ -1442,7 +1442,7 @@ export default function GenshinAssistant() {
                         </div>
                         <h3 className="text-xl font-bold text-dark-charcoal mb-3">No Characters Found</h3>
                         <p className="text-dark-charcoal/70 max-w-md mx-auto">
-                          We couldn't find any characters for your account. Make sure your profile is public and try refreshing your data.
+                          We couldn&apos;t find any characters for your account. Make sure your profile is public and try refreshing your data.
                         </p>
                         <Button 
                           onClick={refreshData}

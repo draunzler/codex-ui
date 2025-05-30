@@ -88,7 +88,7 @@ export default function UserProfileSection({ userData }: UserProfileSectionProps
               </div>
               <div className="flex-1">
                 <div className="text-sm font-medium text-dark-charcoal/80 mb-1">Player Signature</div>
-                <div className="italic text-dark-charcoal font-medium text-lg">"{signature}"</div>
+                <div className="italic text-dark-charcoal font-medium text-lg">&quot;{signature}&quot;</div>
               </div>
             </div>
           </CardContent>

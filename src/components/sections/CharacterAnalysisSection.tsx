@@ -477,7 +477,7 @@ export default function CharacterAnalysisSection({ characters, userUID }: Charac
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {Object.entries(analysisResult.damage_breakdown).map(([ability, damage]: [string, any]) => (
+                      {Object.entries(analysisResult.damage_breakdown).map(([ability, damage]: [string, { average?: number; crit: number; non_crit: number; transformative_damage?: number; total_average?: number }]) => (
                         <div key={ability} className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                           <div className="text-sm text-gray-600 dark:text-gray-300 mb-2 capitalize">
                             {ability.replace(/_/g, ' ')}

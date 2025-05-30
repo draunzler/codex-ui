@@ -160,7 +160,7 @@ export default function FarmingRouteSection({ characters, userUID }: FarmingRout
             <div className="w-8 h-8 bg-gradient-to-r from-[#AC9C8D] to-[#D1C7BD] rounded-full flex items-center justify-center">
               <Calendar className="h-4 w-4 text-[#322D29]" />
             </div>
-            Today's Available Domains
+            Today&apos;s Available Domains
           </CardTitle>
           <CardDescription className="text-[#72383D]">
             {getCurrentDay()} - Plan your daily farming efficiently
@@ -457,7 +457,7 @@ export default function FarmingRouteSection({ characters, userUID }: FarmingRout
                 <span className="font-semibold text-[#322D29]">Stormterror</span>
               </div>
               <div className="text-sm text-[#72383D]">
-                Dvalin's Plume, Dvalin's Claw, Dvalin's Sigh
+                Dvalin&apos;s Plume, Dvalin&apos;s Claw, Dvalin&apos;s Sigh
               </div>
             </div>
 
@@ -477,7 +477,7 @@ export default function FarmingRouteSection({ characters, userUID }: FarmingRout
                 <span className="font-semibold text-[#322D29]">Azhdaha</span>
               </div>
               <div className="text-sm text-[#72383D]">
-                Dragon Lord's Crown, Bloodjade Branch, Gilded Scale
+                Dragon Lord&apos;s Crown, Bloodjade Branch, Gilded Scale
               </div>
             </div>
 
@@ -507,14 +507,14 @@ export default function FarmingRouteSection({ characters, userUID }: FarmingRout
                 <span className="font-semibold text-[#322D29]">Scaramouche</span>
               </div>
               <div className="text-sm text-[#72383D]">
-                Daka's Bell, Mirror of Mushin, Puppet Strings
+                Daka&apos;s Bell, Mirror of Mushin, Puppet Strings
               </div>
             </div>
           </div>
 
           <div className="mt-4 p-3 bg-[#D1C7BD] rounded-lg">
             <div className="text-sm text-[#322D29]">
-              💡 <strong>Tip:</strong> You can fight each weekly boss once per week for rewards. Plan your runs based on which characters you're building!
+              💡 <strong>Tip:</strong> You can fight each weekly boss once per week for rewards. Plan your runs based on which characters you&apos;re building!
             </div>
           </div>
         </CardContent>
