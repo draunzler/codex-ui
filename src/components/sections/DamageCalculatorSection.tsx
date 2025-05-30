@@ -1362,9 +1362,9 @@ export default function DamageCalculatorSection({ userUID, characters }: DamageC
                             Current meta insights
                           </li>
                         </ul>
-                </div>
+                      </div>
                       
-                <Button
+                      <Button
                         onClick={() => {
                           setCalculationType('analysis');
                           calculateDamage();
@@ -1383,8 +1383,8 @@ export default function DamageCalculatorSection({ userUID, characters }: DamageC
                             Analyze Character Build
                           </div>
                         )}
-                </Button>
-              </div>
+                      </Button>
+                    </div>
                   ) : (
                     <div className="text-center py-8 text-muted-foreground">
                       <Brain className="w-12 h-12 mx-auto mb-4 opacity-50" />
@@ -1448,8 +1448,8 @@ export default function DamageCalculatorSection({ userUID, characters }: DamageC
                                       <div>Weapon Type: {results.character_base_data.weapon_type}</div>
                                       <div>Scaling Stat: {results.character_base_data.scaling_stat}</div>
                                       <div>Ascension Stat: {results.character_base_data.ascension_stat} (+{results.character_base_data.ascension_value}%)</div>
-                  </div>
-                </div>
+                                    </div>
+                                  </div>
 
                                   <div className="space-y-2">
                                     <h4 className="font-medium">Base Stats (Level 90)</h4>
@@ -1528,7 +1528,7 @@ export default function DamageCalculatorSection({ userUID, characters }: DamageC
                                 <div className="space-y-6">
                                   {/* Optimal Build */}
                                   {results.build_recommendations.recommendations.optimal_build && (
-                <div className="space-y-4">
+                                    <div className="space-y-4">
                                       {/* Artifacts */}
                                       {results.build_recommendations.recommendations.optimal_build.artifacts && (
                                         <div>
@@ -1580,12 +1580,12 @@ export default function DamageCalculatorSection({ userUID, characters }: DamageC
                                           <h4 className="font-medium mb-2 flex items-center gap-2">
                                             <Sword className="w-4 h-4" />
                                             Weapons
-                  </h4>
+                                          </h4>
                                           <div className="p-4 bg-muted rounded-lg space-y-3">
                                             <div>
                                               <span className="font-medium">Best: </span>
                                               <Badge variant="default">{results.build_recommendations.recommendations.optimal_build.weapons.best}</Badge>
-                      </div>
+                                            </div>
                                             
                                             <div>
                                               <span className="font-medium">Alternatives:</span>
@@ -1594,12 +1594,12 @@ export default function DamageCalculatorSection({ userUID, characters }: DamageC
                                                   <Badge key={index} variant="outline" className="text-xs">
                                                     {weapon}
                                                   </Badge>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+                                                ))}
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
                                       
                                       {/* Talent Priority */}
                                       {results.build_recommendations.recommendations.optimal_build.talent_priority && (
@@ -1614,10 +1614,10 @@ export default function DamageCalculatorSection({ userUID, characters }: DamageC
                                                 {index + 1}. {talent}
                                               </Badge>
                                             ))}
-            </div>
-              </div>
+                                          </div>
+                                        </div>
                                       )}
-                      </div>
+                                    </div>
                                   )}
                                   
                                   {/* Team Compositions */}
@@ -1680,20 +1680,20 @@ export default function DamageCalculatorSection({ userUID, characters }: DamageC
                                     </div>
                                   )}
                                 </div>
-        </CardContent>
-      </Card>
+                              </CardContent>
+                            </Card>
                           )}
 
                           {/* Sources */}
                           {results.build_recommendations && results.build_recommendations.sources && (
                             <Card>
-        <CardHeader>
+                              <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
                                   <Globe className="w-4 h-4" />
                                   Sources
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent>
                                 <div className="space-y-2">
                                   {results.build_recommendations.sources.map((source: string, index: number) => (
                                     <div key={index} className="flex items-center gap-2">
@@ -1706,11 +1706,11 @@ export default function DamageCalculatorSection({ userUID, characters }: DamageC
                                       >
                                         {source}
                                       </a>
-                </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+                                    </div>
+                                  ))}
+                                </div>
+                              </CardContent>
+                            </Card>
                           )}
                         </div>
                       ) : calculationType === 'simple' || calculationType === 'team' ? (
@@ -1720,7 +1720,7 @@ export default function DamageCalculatorSection({ userUID, characters }: DamageC
                           </h3>
                           
                           {/* Character Stats Summary */}
-                          {results.character_stats && (
+                            {results.character_stats && (
                             <Card>
                               <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
@@ -2248,8 +2248,8 @@ export default function DamageCalculatorSection({ userUID, characters }: DamageC
                                   </div>
                                 ))}
                               </div>
-              </div>
-            )}
+                            </div>
+                          )}
                           
                           {/* Character Stats */}
                           {results.character_stats && (
@@ -2263,21 +2263,21 @@ export default function DamageCalculatorSection({ userUID, characters }: DamageC
                               </div>
                             </div>
                           )}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
 
                   {/* Metadata */}
                   {(results.metadata || results.analysis_metadata || results.calculation_method) && (
                     <Card>
-          <CardHeader>
+                      <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                           <Info className="w-4 h-4" />
                           Calculation Details
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
                         <div className="text-sm space-y-1">
                           {/* Analysis metadata */}
                           {results.analysis_metadata && (
@@ -2291,7 +2291,7 @@ export default function DamageCalculatorSection({ userUID, characters }: DamageC
                                 <div className="flex items-center gap-1">
                                   <Globe className="w-3 h-3" />
                                   Web sources used: Yes
-              </div>
+                              </div>
                               )}
                             </>
                           )}
@@ -2318,10 +2318,10 @@ export default function DamageCalculatorSection({ userUID, characters }: DamageC
                           {results.calculation_method && !results.metadata && !results.analysis_metadata && (
                             <div>Method: {results.calculation_method}</div>
                           )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
                 </div>
               ) : (
                 <Card>
