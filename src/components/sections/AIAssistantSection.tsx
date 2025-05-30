@@ -1,38 +1,21 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { genshinAPI } from '@/lib/api';
+import { genshinAPI, UserResponse } from '@/lib/api';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { 
-  MessageCircle, 
   Send, 
   User, 
-  Bot,
-  Sparkles,
-  Clock,
-  Zap,
-  Brain,
-  Target,
-  Shield,
-  Sword,
-  Map,
-  Users,
-  Star,
-  Heart,
-  RotateCcw,
-  HelpCircle,
-  Lightbulb,
-  TrendingUp
+  Brain
 } from 'lucide-react';
 
 interface AIAssistantSectionProps {
   userUID: number;
-  userData?: any;
+  userData?: UserResponse;
 }
 
 interface Message {
@@ -123,7 +106,7 @@ export default function AIAssistantSection({ userUID, userData }: AIAssistantSec
       };
 
       setMessages(prev => [...prev, aiMessage]);
-    } catch (error: any) {
+    } catch {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: 'I apologize, but I encountered an error while processing your question. Please try again or rephrase your question.',
@@ -203,7 +186,7 @@ export default function AIAssistantSection({ userUID, userData }: AIAssistantSec
                         remarkPlugins={[remarkGfm]}
                         components={{
                           // Custom styling for code blocks
-                          code: ({ inline, className, children, ...props }: any) => {
+                          code: ({ inline, children, ...props }: React.ComponentProps<'code'> & { inline?: boolean }) => {
                             return inline ? (
                               <code className="bg-lime-accent/30 text-dark-charcoal px-2 py-1 rounded text-xs font-mono font-semibold" {...props}>
                                 {children}

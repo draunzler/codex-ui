@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -50,7 +50,7 @@ export default function FarmingRouteSection({ characters, userUID }: FarmingRout
   // Common materials for quick selection
   const commonMaterials = [
     'Mora',
-    'Hero\'s Wit',
+    'Hero&apos;s Wit',
     'Mystic Enhancement Ore',
     'Talent Books',
     'Weapon Ascension Materials',
@@ -99,7 +99,7 @@ export default function FarmingRouteSection({ characters, userUID }: FarmingRout
     setError(null);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/materials/character/${characterName}`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/materials/character/${characterName}`);
       if (!response.ok) {
         throw new Error('Failed to load character materials');
       }
@@ -119,8 +119,9 @@ export default function FarmingRouteSection({ characters, userUID }: FarmingRout
         return [...prev, ...newMaterials];
       });
       
-    } catch (err: any) {
-      setError(err.message || 'Failed to load character materials');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load character materials';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -141,9 +142,10 @@ export default function FarmingRouteSection({ characters, userUID }: FarmingRout
         uid: userUID
       });
 
-      setFarmingResult(result);
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to generate farming route');
+      setFarmingResult(result as FarmingResult);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to generate farming route';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

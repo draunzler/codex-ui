@@ -5,25 +5,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { UserResponse } from '@/lib/api';
 import { 
   User, 
-  Trophy, 
   Calendar, 
   Star, 
-  Sword,
-  MapPin,
   Clock,
-  TrendingUp,
-  Globe,
   Shield,
   Zap,
   Map,
   RefreshCw,
   Award,
-  Target,
   Activity,
-  Crown,
-  Gamepad2,
   Timer,
-  BarChart3,
   Users
 } from 'lucide-react';
 import { format } from 'date-fns';
@@ -247,7 +238,7 @@ export default function UserProfileSection({ userData }: UserProfileSectionProps
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <div className="w-8 h-8 bg-gradient-to-r from-success-green to-lime-accent rounded-lg flex items-center justify-center shadow-md">
-              <Clock className="h-4 w-4 text-dark-charcoal" />
+              <Calendar className="h-4 w-4 text-dark-charcoal" />
             </div>
             Account Timeline
           </CardTitle>

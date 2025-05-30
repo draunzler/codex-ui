@@ -9,8 +9,6 @@ import { UserResponse, CharacterResponse, genshinAPI } from '@/lib/api';
 import AIAssistantSection from './sections/AIAssistantSection';
 import DamageCalculatorSection from './sections/DamageCalculatorSection';
 import ExplorationMapSection from './sections/ExplorationMapSection';
-import CharacterAnalysisSection from './sections/CharacterAnalysisSection';
-import UserProfileSection from './sections/UserProfileSection';
 import { 
   MessageCircle, 
   Calculator, 
@@ -19,16 +17,11 @@ import {
   Users,
   RefreshCw,
   X,
-  ChevronRight,
-  Sparkles,
   Trophy,
   Star,
   MessageSquare,
   Shield,
-  Sprout,
-  Menu,
   Search,
-  Home,
   BarChart3,
   Sword,
   Crown,
@@ -46,7 +39,6 @@ export default function GenshinAssistant() {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [uidInput, setUidInput] = useState('');
   const [selectedCharacterDetails, setSelectedCharacterDetails] = useState<CharacterResponse | null>(null);
-  const [showCharacterDetailsInDrawer, setShowCharacterDetailsInDrawer] = useState(false);
   
   // Ref for the Start Your Journey section
   const startJourneyRef = React.useRef<HTMLDivElement>(null);
@@ -95,12 +87,13 @@ export default function GenshinAssistant() {
       setUserData(userResponse);
       setCharacters(charactersResponse);
       setUserUID(uid);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error loading user data:', err);
-      if (err.message?.includes('not found') || err.response?.status === 404) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      if (errorMessage?.includes('not found') || (err as { response?: { status?: number } })?.response?.status === 404) {
         setError(`User profile not found for UID ${uid}. This UID doesn't exist in our database yet.`);
       } else {
-        setError(err.message || 'Failed to load user data');
+        setError(errorMessage || 'Failed to load user data');
       }
     } finally {
       setLoading(false);
@@ -114,14 +107,15 @@ export default function GenshinAssistant() {
     setError(null);
     
     try {
-      const newUser = await genshinAPI.createUser({
+      await genshinAPI.createUser({
         uid: parseInt(uidInput)
       });
       
       setUserUID(uidInput);
       await loadUserData(uidInput);
-    } catch (err: any) {
-      setError(err.message || 'Failed to create user profile');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      setError(errorMessage || 'Failed to create user profile');
     } finally {
       setLoading(false);
     }
@@ -230,17 +224,14 @@ export default function GenshinAssistant() {
 
   const handleCharacterDetailsClick = (character: CharacterResponse) => {
     setSelectedCharacterDetails(character);
-    setShowCharacterDetailsInDrawer(true);
   };
 
   const handleBackToCharacterList = () => {
-    setShowCharacterDetailsInDrawer(false);
     setSelectedCharacterDetails(null);
   };
 
   const handleCloseCharacterDrawer = () => {
     setShowCharacterDrawer(false);
-    setShowCharacterDetailsInDrawer(false);
     setSelectedCharacterDetails(null);
   };
 
@@ -408,7 +399,7 @@ export default function GenshinAssistant() {
                         <div>
                           <h4 className="font-bold text-dark-charcoal mb-2">Access Character Showcase</h4>
                           <p className="text-dark-charcoal/80 text-sm leading-relaxed">
-                            Go to <strong>Profile → Character Showcase</strong> or press <strong>F2</strong> then click on "Character Showcase"
+                            Go to <strong>Profile → Character Showcase</strong> or press <strong>F2</strong> then click on &quot;Character Showcase&quot;
                           </p>
                         </div>
                       </div>
@@ -420,7 +411,7 @@ export default function GenshinAssistant() {
                         <div>
                           <h4 className="font-bold text-dark-charcoal mb-2">Add Your Characters</h4>
                           <p className="text-dark-charcoal/80 text-sm leading-relaxed">
-                            Click the <strong>"+"</strong> button to add characters you want to showcase. You can add up to <strong>12 characters</strong>
+                            Click the <strong>&quot;+&quot;</strong> button to add characters you want to showcase. You can add up to <strong>12 characters</strong>
                           </p>
                         </div>
                       </div>
@@ -432,7 +423,7 @@ export default function GenshinAssistant() {
                         <div>
                           <h4 className="font-bold text-dark-charcoal mb-2">Make Profile Public</h4>
                           <p className="text-dark-charcoal/80 text-sm leading-relaxed">
-                            Ensure your profile is set to <strong>"Show Character Details"</strong> so the API can access your character data
+                            Ensure your profile is set to <strong>&quot;Show Character Details&quot;</strong> so the API can access your character data
                           </p>
                         </div>
                       </div>
@@ -444,7 +435,7 @@ export default function GenshinAssistant() {
                         <div>
                           <h4 className="font-bold text-dark-charcoal mb-2">Save Changes</h4>
                           <p className="text-dark-charcoal/80 text-sm leading-relaxed">
-                            Click <strong>"Save"</strong> to apply your character showcase settings
+                            Click <strong>&quot;Save&quot;</strong> to apply your character showcase settings
                           </p>
                         </div>
                       </div>
@@ -617,7 +608,7 @@ export default function GenshinAssistant() {
                         </p>
                         {error.includes('not found') && (
                           <p className="text-dark-charcoal/70 text-sm">
-                            Don't worry! We can create a new profile for your UID and start tracking your Genshin Impact data.
+                            Don&apos;t worry! We can create a new profile for your UID and start tracking your Genshin Impact data.
                           </p>
                         )}
                       </div>
@@ -640,11 +631,11 @@ export default function GenshinAssistant() {
                             </li>
                             <li className="flex items-center gap-2">
                               <div className="w-2 h-2 bg-lime-accent rounded-full"></div>
-                              We'll fetch your public profile data from Genshin Impact
+                              We&apos;ll fetch your public profile data from Genshin Impact
                             </li>
                             <li className="flex items-center gap-2">
                               <div className="w-2 h-2 bg-lime-accent rounded-full"></div>
-                              You'll get access to all AI assistant features
+                              You&apos;ll get access to all AI assistant features
                             </li>
                             <li className="flex items-center gap-2">
                               <div className="w-2 h-2 bg-lime-accent rounded-full"></div>
@@ -877,7 +868,7 @@ export default function GenshinAssistant() {
                         <div className="p-3 bg-gradient-to-r from-lime-accent/10 via-success-green/10 to-lime-accent/10 rounded-lg border border-lime-accent/20">
                           <div className="text-xs font-medium text-dark-charcoal/70 mb-1">Player Signature</div>
                           <div className="italic text-dark-charcoal font-medium">
-                            "{userData.profile_data?.signature || userData.signature}"
+                            &quot;{userData.profile_data?.signature || userData.signature}&quot;
                           </div>
                         </div>
                       )}
@@ -1162,7 +1153,7 @@ export default function GenshinAssistant() {
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             {/* Element DMG Bonus */}
                             {selectedCharacterDetails.stats && ['pyro', 'hydro', 'anemo', 'electro', 'dendro', 'cryo', 'geo', 'physical'].map((element) => {
-                              const dmgBonus = selectedCharacterDetails.stats![`${element}_dmg_bonus`] || 0;
+                              const dmgBonus = (selectedCharacterDetails.stats![`${element}_dmg_bonus`] as number) || 0;
                               if (dmgBonus > 0) {
                                 const elementColors = getElementColors(element);
                                 return (
@@ -1311,7 +1302,7 @@ export default function GenshinAssistant() {
                                   <div className="text-sm font-semibold text-dark-charcoal bg-white px-4 py-2 rounded-full shadow-sm">
                                       {selectedCharacterDetails.constellation === 0 ? 'No Constellations' :
                                        selectedCharacterDetails.constellation === 6 ? 'Max Constellations' :
-                                       `${selectedCharacterDetails.constellation} Constellation${selectedCharacterDetails.constellation > 1 ? 's' : ''}`}
+                                       selectedCharacterDetails.constellation + ' Constellation' + (selectedCharacterDetails.constellation > 1 ? 's' : '')}
                                     </div>
                                   </div>
                                 </CardContent>

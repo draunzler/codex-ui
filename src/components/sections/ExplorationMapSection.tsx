@@ -9,14 +9,10 @@ import dynamic from 'next/dynamic';
 import { 
   Map, 
   Route,
-  Search,
-  MapPin,
-  Compass,
   Clock,
   Star,
   Gem,
   Flower,
-  Zap,
   X,
   Navigation
 } from 'lucide-react';
@@ -83,10 +79,11 @@ export default function ExplorationMapSection({ userUID }: ExplorationMapSection
         materials: selectedMaterials,
         uid: userUID
       });
-      setFarmingRoute(response);
+      setFarmingRoute(response as FarmingRoute);
       setShowRouteOnMap(true);
-    } catch (err: any) {
-      setError(err.message || 'Failed to generate farming route');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to generate farming route';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

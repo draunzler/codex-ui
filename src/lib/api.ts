@@ -173,7 +173,7 @@ export interface CharacterResponse {
     cryo_res?: number;
     max_hp?: number;
     spd?: number;
-    [key: string]: any; // For additional dynamic stats
+    [key: string]: unknown; // For additional dynamic stats
   };
   icon_url?: string;
   local_icon_available?: boolean;
@@ -204,7 +204,11 @@ export interface FarmingRouteRequest {
 }
 
 export interface ExplorationResponse {
-  regions: Record<string, any>;
+  regions: Record<string, {
+    name: string;
+    level?: number;
+    exploration_percentage?: number;
+  }>;
   average_exploration: number;
   total_regions: number;
 }
@@ -212,7 +216,7 @@ export interface ExplorationResponse {
 export interface SuccessResponse {
   success: boolean;
   message: string;
-  data?: any;
+  data?: unknown;
 }
 
 export interface ErrorResponse {
@@ -236,11 +240,27 @@ export interface MechanicalDamageResponse {
   team: string[];
   enemy_level: number;
   total_damage: number;
-  damage_breakdown: any[];
-  character_stats: any;
-  enemy_stats: any;
+  damage_breakdown: Array<{
+    ability: string;
+    damage: number;
+    crit_damage: number;
+    non_crit_damage: number;
+  }>;
+  character_stats: {
+    total_atk: number;
+    crit_rate: number;
+    crit_dmg: number;
+    elemental_mastery: number;
+  };
+  enemy_stats: {
+    level: number;
+    resistances: Record<string, number>;
+  };
   reactions: string[];
-  calculation_metadata: any;
+  calculation_metadata: {
+    calculation_method: string;
+    timestamp: string;
+  };
 }
 
 export interface AdvancedDamageRequest {
@@ -314,10 +334,25 @@ export interface AdvancedDamageResponse {
   character_name: string;
   team_composition: string[];
   total_damage: number;
-  damage_scenarios: any[];
-  character_stats: any;
-  enemy_stats: any;
-  calculation_metadata: any;
+  damage_scenarios: Array<{
+    name: string;
+    damage: number;
+    crit_damage: number;
+    average_damage: number;
+  }>;
+  character_stats: {
+    total_atk: number;
+    crit_rate: number;
+    crit_dmg: number;
+  };
+  enemy_stats: {
+    level: number;
+    resistances: Record<string, number>;
+  };
+  calculation_metadata: {
+    method: string;
+    timestamp: string;
+  };
 }
 
 export interface CharacterAnalysisRequest {
@@ -352,20 +387,61 @@ export interface ComprehensiveTeamAnalysisResponse {
   team_synergy_score: number;
   elemental_coverage: Record<string, boolean>;
   role_distribution: Record<string, string>;
-  damage_analysis: any;
-  rotation_guide: any;
-  artifact_recommendations: any;
-  weapon_recommendations: any;
-  constellation_impact: any;
-  team_buffs: any[];
+  damage_analysis: {
+    total_damage: number;
+    damage_per_rotation: number;
+    dps: number;
+  };
+  rotation_guide: {
+    rotation_steps: string[];
+    duration: number;
+    notes: string;
+  };
+  artifact_recommendations: {
+    main_stats: Record<string, string>;
+    sub_stats: string[];
+    set_bonuses: string[];
+  };
+  weapon_recommendations: {
+    recommended_weapons: string[];
+    alternatives: string[];
+  };
+  constellation_impact: {
+    recommended_constellations: number[];
+    impact_analysis: string;
+  };
+  team_buffs: Array<{
+    source: string;
+    buff_type: string;
+    value: number;
+  }>;
   weaknesses: string[];
   strengths: string[];
-  investment_priority: any;
-  alternative_characters: any;
-  content_performance: any;
-  budget_analysis?: any;
-  advanced_tips: any;
-  meta_relevance: any;
+  investment_priority: {
+    priority_order: string[];
+    reasoning: string;
+  };
+  alternative_characters: {
+    replacements: Record<string, string[]>;
+    reasoning: string;
+  };
+  content_performance: {
+    spiral_abyss: string;
+    overworld: string;
+    domains: string;
+  };
+  budget_analysis?: {
+    low_investment: string;
+    high_investment: string;
+  };
+  advanced_tips: {
+    tips: string[];
+    common_mistakes: string[];
+  };
+  meta_relevance: {
+    current_tier: string;
+    meta_score: number;
+  };
 }
 
 // Simple Damage Calculator Interfaces
@@ -437,7 +513,11 @@ export interface TeamDamageResponse {
   main_dps_damage: SimpleDamageResponse;
   team_buffs: {
     total_multipliers: Record<string, number>;
-    categorized_buffs: Record<string, any[]>;
+    categorized_buffs: Record<string, Array<{
+      source: string;
+      type: string;
+      value: number;
+    }>>;
     synergy_score: number;
     elemental_coverage: Record<string, boolean>;
     recommended_rotation: string;
@@ -490,113 +570,111 @@ export const genshinAPI = {
   },
 
   // AI Assistant
-  async analyzeCharacterAdvanced(request: DamageCalculationRequest): Promise<any> {
-    const response = await api.post('/ai/analyze-character', request);
+  async analyzeCharacterAdvanced(request: DamageCalculationRequest): Promise<AdvancedDamageResponse> {
+    const response = await api.post('/damage/advanced', request);
     return response.data;
   },
 
-  async calculateDamage(request: DamageCalculationRequest): Promise<any> {
-    const response = await api.post('/ai/damage-calculation', request);
+  async calculateDamage(request: DamageCalculationRequest): Promise<SimpleDamageResponse> {
+    const response = await api.post('/damage/calculate', request);
     return response.data;
   },
 
-  async getBuildRecommendation(request: BuildRecommendationRequest): Promise<any> {
-    const response = await api.post('/ai/build-recommendation', request);
+  async getBuildRecommendation(request: BuildRecommendationRequest): Promise<unknown> {
+    const response = await api.post('/builds/recommend', request);
     return response.data;
   },
 
-  async askQuestion(request: QuestionRequest): Promise<any> {
+  async askQuestion(request: QuestionRequest): Promise<{ answer: string; response: string }> {
     const response = await api.post('/ai/question', request);
     return response.data;
   },
 
-  async getFarmingRoute(request: FarmingRouteRequest): Promise<any> {
-    const response = await api.post('/ai/farming-route', request);
+  async getFarmingRoute(request: FarmingRouteRequest): Promise<unknown> {
+    const response = await api.post('/farming/route', request);
     return response.data;
   },
 
   // Materials
-  async getCharacterMaterials(characterName: string): Promise<any> {
-    const response = await api.get(`/materials/character/${characterName}`);
+  async getCharacterMaterials(characterName: string): Promise<unknown> {
+    const response = await api.get(`/characters/${characterName}/materials`);
     return response.data;
   },
 
-  async getCharacterFarmingRoute(characterName: string): Promise<any> {
-    const response = await api.get(`/materials/farming-route/${characterName}`);
+  async getCharacterFarmingRoute(characterName: string): Promise<unknown> {
+    const response = await api.get(`/characters/${characterName}/farming-route`);
     return response.data;
   },
 
-  async getMaterialsByRegion(region: string): Promise<any> {
+  async getMaterialsByRegion(region: string): Promise<unknown> {
     const response = await api.get(`/materials/region/${region}`);
     return response.data;
   },
 
   // System
-  async getSchedulerStatus(): Promise<any> {
-    const response = await api.get('/system/scheduler');
+  async getSchedulerStatus(): Promise<unknown> {
+    const response = await api.get('/system/scheduler/status');
     return response.data;
   },
 
-  async healthCheck(): Promise<any> {
+  async healthCheck(): Promise<unknown> {
     const response = await api.get('/health');
     return response.data;
   },
 
   // Hybrid Character System
-  async getHybridCharacters(uid: number): Promise<any> {
+  async getHybridCharacters(uid: number): Promise<unknown> {
     const response = await api.get(`/users/${uid}/characters/hybrid`);
     return response.data;
   },
 
-  async getSetupInstructions(): Promise<any> {
+  async getSetupInstructions(): Promise<unknown> {
     const response = await api.get('/characters/setup-instructions');
     return response.data;
   },
 
-  async getCharacterTemplate(): Promise<any> {
+  async getCharacterTemplate(): Promise<unknown> {
     const response = await api.get('/characters/template');
     return response.data;
   },
 
-  async addCharacterManually(characterData: any): Promise<SuccessResponse> {
-    const response = await api.post('/characters/add-manually', characterData);
+  async addCharacterManually(characterData: unknown): Promise<SuccessResponse> {
+    const response = await api.post('/characters/manual', characterData);
     return response.data;
   },
 
   // Advanced Damage Calculations
   async calculateMechanicalDamage(request: MechanicalDamageRequest): Promise<MechanicalDamageResponse> {
-    const response = await api.post('/ai/mechanical-damage', request);
+    const response = await api.post('/damage/mechanical', request);
     return response.data;
   },
 
   async calculateAdvancedDamage(request: AdvancedDamageRequest): Promise<AdvancedDamageResponse> {
-    const response = await api.post('/ai/advanced-damage', request);
+    const response = await api.post('/damage/advanced-calculation', request);
     return response.data;
   },
 
-  async analyzeCharacter(request: CharacterAnalysisRequest): Promise<any> {
-    const response = await api.post('/ai/analyze-character', request);
+  async analyzeCharacter(request: CharacterAnalysisRequest): Promise<unknown> {
+    const response = await api.post('/analysis/character', request);
     return response.data;
   },
 
   // Dynamic Damage Calculation with Web Data
-  async calculateDynamicDamage(request: MechanicalDamageRequest): Promise<any> {
-    const response = await api.post('/ai/dynamic-damage', request);
+  async calculateDynamicDamage(request: MechanicalDamageRequest): Promise<unknown> {
+    const response = await api.post('/damage/dynamic', request);
     return response.data;
   },
 
-  async analyzeCharacterWithWebData(request: CharacterAnalysisRequest): Promise<any> {
-    const response = await api.post('/ai/web-character-analysis', request);
+  async analyzeCharacterWithWebData(request: CharacterAnalysisRequest): Promise<unknown> {
+    const response = await api.post('/analysis/character-web', request);
     return response.data;
   },
 
-  async buildMetaTeam(characterName: string, availableCharacters?: string[]): Promise<any> {
-    const params = new URLSearchParams();
-    params.append('character_name', characterName);
-    if (availableCharacters) {
-      availableCharacters.forEach(char => params.append('available_characters', char));
-    }
-    const response = await api.post(`/ai/meta-team-builder?${params.toString()}`);
+  async buildMetaTeam(characterName: string, availableCharacters?: string[]): Promise<unknown> {
+    const response = await api.post('/teams/meta-build', {
+      character_name: characterName,
+      available_characters: availableCharacters || []
+    });
     return response.data;
   },
 

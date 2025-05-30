@@ -24,7 +24,6 @@ import {
   Calculator, 
   Target, 
   Users, 
-  Zap,
   TrendingUp,
   BarChart3,
   Sparkles,
@@ -34,20 +33,16 @@ import {
   Star,
   Flame,
   User,
-  Plus,
   X,
   Settings,
   Activity,
   Gauge,
   Brain,
-  Beaker,
   ChevronDown,
   ChevronUp,
   Info,
   AlertCircle,
   Globe,
-  Search,
-  Wand2,
   Lightbulb
 } from 'lucide-react';
 
@@ -354,20 +349,20 @@ export default function DamageCalculatorSection({ userUID, characters }: DamageC
   };
 
   const removeFromTeam = (characterName: string) => {
-    setSelectedTeam(selectedTeam.filter(c => c.name !== characterName));
+    setSelectedTeam(prev => prev.filter(c => c.name !== characterName));
   };
 
   const toggleReaction = (reaction: string) => {
     // This function is no longer needed as reactions are not part of the API request model
   };
 
-  const updateDamageScenario = (index: number, field: keyof DamageScenario, value: any) => {
+  const updateDamageScenario = (index: number, field: keyof DamageScenario, value: unknown) => {
     setDamageScenarios(prev => prev.map((scenario, i) => 
       i === index ? { ...scenario, [field]: value } : scenario
     ));
   };
 
-  const updateTeamBuff = (index: number, field: keyof TeamBuff, value: any) => {
+  const updateTeamBuff = (index: number, field: keyof TeamBuff, value: unknown) => {
     setTeamBuffs(prev => prev.map((buff, i) => 
       i === index ? { ...buff, [field]: value } : buff
     ));
@@ -986,7 +981,7 @@ export default function DamageCalculatorSection({ userUID, characters }: DamageC
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       <div>
                         <Label htmlFor="analysis-depth">Analysis Depth</Label>
-                        <Select value={analysisDepth} onValueChange={(value: any) => setAnalysisDepth(value)}>
+                        <Select value={analysisDepth} onValueChange={(value) => setAnalysisDepth(value as 'basic' | 'detailed' | 'comprehensive')}>
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
@@ -1000,7 +995,7 @@ export default function DamageCalculatorSection({ userUID, characters }: DamageC
 
                       <div>
                         <Label htmlFor="content-focus">Content Focus</Label>
-                        <Select value={contentFocus} onValueChange={(value: any) => setContentFocus(value)}>
+                        <Select value={contentFocus} onValueChange={(value) => setContentFocus(value as 'spiral_abyss' | 'overworld' | 'domains' | 'general')}>
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
@@ -1015,7 +1010,7 @@ export default function DamageCalculatorSection({ userUID, characters }: DamageC
 
                       <div>
                         <Label htmlFor="playstyle">Playstyle Preference</Label>
-                        <Select value={playstylePreference} onValueChange={(value: any) => setPlaystylePreference(value)}>
+                        <Select value={playstylePreference} onValueChange={(value) => setPlaystylePreference(value as 'aggressive' | 'balanced' | 'defensive')}>
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
@@ -1651,11 +1646,11 @@ export default function DamageCalculatorSection({ userUID, characters }: DamageC
                                         Team Compositions
                                       </h4>
                                       <div className="space-y-3">
-                                        {results.build_recommendations.recommendations.team_compositions.map((team: any, index: number) => (
+                                        {results.build_recommendations.recommendations.team_compositions.map((team: { team_name: string; members: string[]; synergy: string }, index: number) => (
                                           <div key={index} className="p-4 bg-muted rounded-lg">
                                             <div className="flex items-center gap-2 mb-2">
                                               <Badge variant="default">{team.team_name}</Badge>
-                    </div>
+                                            </div>
                                             <div className="space-y-2">
                                               <div>
                                                 <span className="font-medium">Members: </span>
@@ -1664,18 +1659,18 @@ export default function DamageCalculatorSection({ userUID, characters }: DamageC
                                                     <Badge key={memberIndex} variant="outline" className="text-xs">
                                                       {member}
                                                     </Badge>
-                ))}
-              </div>
-            </div>
+                                                  ))}
+                                                </div>
+                                              </div>
                                               <div className="text-sm text-muted-foreground">
                                                 {team.synergy}
-                    </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+                                              </div>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
                                   
                                   {/* Skill Rotation */}
                                   {results.build_recommendations.recommendations.skill_rotation && (
@@ -1816,59 +1811,74 @@ export default function DamageCalculatorSection({ userUID, characters }: DamageC
                               </CardHeader>
                               <CardContent>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  {Object.entries(results.damage_breakdown).map(([ability, damage]: [string, any]) => (
-                                    <div key={ability} className="p-4 bg-muted rounded-lg">
-                                      <h4 className="font-medium mb-3 capitalize">
-                                        {ability.replace('_', ' ')}
-                                      </h4>
-                                      <div className="space-y-2">
-                                        <div className="flex justify-between">
-                                          <span className="text-sm">Average:</span>
-                                          <span className="font-bold text-blue-600">
-                                            {Math.round(damage.total_average || damage.average || 0).toLocaleString()}
-                                          </span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                          <span className="text-sm">Crit:</span>
-                                          <span className="font-bold text-green-600">
-                                            {Math.round(damage.crit).toLocaleString()}
-                                          </span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                          <span className="text-sm">Non-Crit:</span>
-                                          <span className="font-bold text-gray-600">
-                                            {Math.round(damage.non_crit).toLocaleString()}
-                                          </span>
-                                        </div>
-                                        {damage.transformative_damage && damage.transformative_damage > 0 && (
+                                  {Object.entries(results.damage_breakdown).map(([ability, damage]: [string, unknown]) => {
+                                    const damageData = damage as {
+                                      total_average?: number;
+                                      average?: number;
+                                      crit: number;
+                                      non_crit: number;
+                                      transformative_damage?: number;
+                                      talent_multiplier?: number;
+                                      scaling_attribute?: string;
+                                      resistance_multiplier?: number;
+                                      res_multiplier?: number;
+                                      defense_multiplier?: number;
+                                      def_multiplier?: number;
+                                    };
+                                    return (
+                                      <div key={ability} className="p-4 bg-muted rounded-lg">
+                                        <h4 className="font-medium mb-3 capitalize">
+                                          {ability.replace('_', ' ')}
+                                        </h4>
+                                        <div className="space-y-2">
                                           <div className="flex justify-between">
-                                            <span className="text-sm">Transformative:</span>
-                                            <span className="font-bold text-purple-600">
-                                              {Math.round(damage.transformative_damage).toLocaleString()}
+                                            <span className="text-sm">Average:</span>
+                                            <span className="font-bold text-blue-600">
+                                              {Math.round(damageData.total_average || damageData.average || 0).toLocaleString()}
                                             </span>
                                           </div>
-                                        )}
-                                        <div className="text-xs text-muted-foreground mt-2 space-y-1">
-                                          <div>
-                                            Talent: {damage.talent_multiplier ? damage.talent_multiplier.toFixed(1) : 'N/A'}% | 
-                                            {damage.scaling_attribute && (
-                                              <span> Scaling: {damage.scaling_attribute.toUpperCase()}</span>
+                                          <div className="flex justify-between">
+                                            <span className="text-sm">Crit:</span>
+                                            <span className="font-bold text-green-600">
+                                              {Math.round(damageData.crit).toLocaleString()}
+                                            </span>
+                                          </div>
+                                          <div className="flex justify-between">
+                                            <span className="text-sm">Non-Crit:</span>
+                                            <span className="font-bold text-gray-600">
+                                              {Math.round(damageData.non_crit).toLocaleString()}
+                                            </span>
+                                          </div>
+                                          {damageData.transformative_damage && damageData.transformative_damage > 0 && (
+                                            <div className="flex justify-between">
+                                              <span className="text-sm">Transformative:</span>
+                                              <span className="font-bold text-purple-600">
+                                                {Math.round(damageData.transformative_damage).toLocaleString()}
+                                              </span>
+                                            </div>
+                                          )}
+                                          <div className="text-xs text-muted-foreground mt-2 space-y-1">
+                                            <div>
+                                              Talent: {damageData.talent_multiplier ? damageData.talent_multiplier.toFixed(1) : 'N/A'}% | 
+                                              {damageData.scaling_attribute && (
+                                                <span> Scaling: {damageData.scaling_attribute.toUpperCase()}</span>
+                                              )}
+                                            </div>
+                                            {(damageData.resistance_multiplier || damageData.res_multiplier) && (
+                                              <div>
+                                                Resistance: {(((damageData.resistance_multiplier || damageData.res_multiplier) || 0) * 100).toFixed(1)}%
+                                              </div>
+                                            )}
+                                            {(damageData.defense_multiplier || damageData.def_multiplier) && (
+                                              <div>
+                                                Defense: {(((damageData.defense_multiplier || damageData.def_multiplier) || 0) * 100).toFixed(1)}%
+                                              </div>
                                             )}
                                           </div>
-                                          {(damage.resistance_multiplier || damage.res_multiplier) && (
-                                            <div>
-                                              Resistance: {((damage.resistance_multiplier || damage.res_multiplier) * 100).toFixed(1)}%
-                                            </div>
-                                          )}
-                                          {(damage.defense_multiplier || damage.def_multiplier) && (
-                                            <div>
-                                              Defense: {((damage.defense_multiplier || damage.def_multiplier) * 100).toFixed(1)}%
-                                            </div>
-                                          )}
                                         </div>
                                       </div>
-                                    </div>
-                                  ))}
+                                    );
+                                  })}
                                 </div>
                               </CardContent>
                             </Card>

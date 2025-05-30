@@ -25,19 +25,47 @@ interface CharacterAnalysisSectionProps {
 interface AnalysisResult {
   character: string;
   element: string;
-  damage_breakdown: any;
-  build_analysis: any;
-  recommendations: any[];
-  summary: any;
+  damage_breakdown: Record<string, {
+    average?: number;
+    crit: number;
+    non_crit: number;
+    transformative_damage?: number;
+    total_average?: number;
+  }>;
+  build_analysis: {
+    crit_value?: number;
+    atk_rating?: number;
+    crit_ratio?: number;
+    overall_score?: number;
+  };
+  recommendations: Array<{
+    priority: string;
+    category: string;
+    action: string;
+    expected_improvement?: string;
+    current_value?: string;
+  }>;
+  summary: {
+    overall_rating?: string;
+    crit_value?: number;
+    total_attack?: string;
+    build_efficiency?: string;
+  };
+}
+
+interface HybridCharacters {
+  total_characters: number;
+  automated_count: number;
+  manual_count: number;
+  showcase_limit_reached: boolean;
+  characters: CharacterResponse[];
 }
 
 export default function CharacterAnalysisSection({ characters, userUID }: CharacterAnalysisSectionProps) {
-  const [selectedCharacter, setSelectedCharacter] = useState<CharacterResponse | null>(null);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
-  const [hybridCharacters, setHybridCharacters] = useState<any>(null);
+  const [hybridCharacters, setHybridCharacters] = useState<HybridCharacters | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showSetupInstructions, setShowSetupInstructions] = useState(false);
 
   const getElementColor = (element: string) => {
     switch (element?.toLowerCase()) {
@@ -102,9 +130,10 @@ export default function CharacterAnalysisSection({ characters, userUID }: Charac
         throw new Error('Failed to load hybrid characters');
       }
       const data = await response.json();
-      setHybridCharacters(data);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load hybrid characters');
+      setHybridCharacters(data as HybridCharacters);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load hybrid characters';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -127,14 +156,14 @@ export default function CharacterAnalysisSection({ characters, userUID }: Charac
       // Try the calculateDamage endpoint first (more stable)
       try {
         result = await genshinAPI.calculateDamage(requestData);
-      } catch (firstError: any) {
-        console.log('calculateDamage failed, trying analyzeCharacterAdvanced...', firstError.message);
+      } catch (firstError: unknown) {
+        console.log('calculateDamage failed, trying analyzeCharacterAdvanced...', firstError instanceof Error ? firstError.message : 'Unknown error');
         
         // Fallback to analyzeCharacterAdvanced if calculateDamage fails
         try {
           result = await genshinAPI.analyzeCharacterAdvanced(requestData);
-        } catch (secondError: any) {
-          console.log('Both backend endpoints failed, using client-side analysis...', secondError.message);
+        } catch (secondError: unknown) {
+          console.log('Both backend endpoints failed, using client-side analysis...', secondError instanceof Error ? secondError.message : 'Unknown error');
           
           // Final fallback: client-side analysis
           analyzeCharacterStats(character);
@@ -143,18 +172,19 @@ export default function CharacterAnalysisSection({ characters, userUID }: Charac
         }
       }
       
-      setAnalysisResult(result);
-    } catch (err: any) {
+      setAnalysisResult(result as unknown as AnalysisResult);
+    } catch (err: unknown) {
       console.error('Character analysis error:', err);
       
       // Provide more specific error messages
-      if (err.message?.includes('takes 4 positional arguments but 5 were given')) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      if (errorMessage?.includes('takes 4 positional arguments but 5 were given')) {
         setError('Backend method signature mismatch. Using client-side analysis instead.');
         analyzeCharacterStats(character);
-      } else if (err.response?.status === 500) {
+      } else if (errorMessage?.includes('Server error')) {
         setError('Server error during analysis. Using client-side analysis instead.');
         analyzeCharacterStats(character);
-      } else if (err.response?.status === 422) {
+      } else if (errorMessage?.includes('Invalid request format')) {
         setError('Invalid request format. Using client-side analysis instead.');
         analyzeCharacterStats(character);
       } else {
@@ -174,7 +204,6 @@ export default function CharacterAnalysisSection({ characters, userUID }: Charac
     let critRate = 5; // Base crit rate
     let critDamage = 50; // Base crit damage
     let totalAttackPercent = 0;
-    let elementalMastery = 0;
     
     character.artifacts.forEach(artifact => {
       artifact.subStats.forEach(subStat => {
@@ -184,8 +213,6 @@ export default function CharacterAnalysisSection({ characters, userUID }: Charac
           critDamage += subStat.value;
         } else if (subStat.name.includes('ATK%')) {
           totalAttackPercent += subStat.value;
-        } else if (subStat.name.includes('Elemental Mastery')) {
-          elementalMastery += subStat.value;
         }
       });
       
@@ -196,8 +223,6 @@ export default function CharacterAnalysisSection({ characters, userUID }: Charac
         critDamage += artifact.mainStat.value;
       } else if (artifact.mainStat.name.includes('ATK%')) {
         totalAttackPercent += artifact.mainStat.value;
-      } else if (artifact.mainStat.name.includes('Elemental Mastery')) {
-        elementalMastery += artifact.mainStat.value;
       }
     });
     
@@ -246,9 +271,8 @@ export default function CharacterAnalysisSection({ characters, userUID }: Charac
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/characters/setup-instructions`);
       if (response.ok) {
-        const instructions = await response.json();
-        setShowSetupInstructions(true);
-        // You could show instructions in a modal or expand section
+        await response.json();
+        // Instructions could be shown in a modal or expand section
       }
     } catch (err) {
       console.error('Failed to load setup instructions:', err);
@@ -346,7 +370,7 @@ export default function CharacterAnalysisSection({ characters, userUID }: Charac
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {(hybridCharacters?.characters || characters).map((character: any) => (
+              {(hybridCharacters?.characters || characters).map((character: CharacterResponse) => (
                 <Card key={character.id} className="bg-white/90 backdrop-blur-sm border border-lime-accent/30 shadow-xl">
                   <CardContent className="p-6">
                     <div className="space-y-6">
@@ -391,12 +415,12 @@ export default function CharacterAnalysisSection({ characters, userUID }: Charac
                         </div>
                         
                         <div className="text-center p-4 bg-gradient-lime rounded-lg shadow-lg">
-                          <div className="text-2xl font-bold text-dark-charcoal mb-1">{character.friendship_level || character.friendship || 0}</div>
+                          <div className="text-2xl font-bold text-dark-charcoal mb-1">{character.friendship || 0}</div>
                           <div className="text-sm text-dark-charcoal/80">Friendship</div>
                         </div>
                         
                         <div className="text-center p-4 bg-dark-charcoal rounded-lg shadow-lg">
-                          <div className="text-2xl font-bold text-lime-accent mb-1">{character.ascension || 0}</div>
+                          <div className="text-2xl font-bold text-lime-accent mb-1">{character.weapon?.ascension || 0}</div>
                           <div className="text-sm text-lime-accent/90">Ascension</div>
                         </div>
                       </div>
@@ -406,217 +430,11 @@ export default function CharacterAnalysisSection({ characters, userUID }: Charac
               ))}
             </div>
           )}
-
-          {/* Character Details Panel */}
-          {selectedCharacter && (
-            <div className="mt-6 border rounded-xl overflow-hidden">
-              {/* Header with Character Info */}
-              <div className={`bg-gradient-to-r ${getElementGradient(selectedCharacter.element)} p-6 text-white`}>
-                <div className="flex items-center gap-4">
-                  <img
-                    src={getCharacterPortraitUrl(selectedCharacter.id)}
-                    alt={selectedCharacter.name}
-                    className="w-20 h-20 rounded-full border-4 border-white shadow-lg"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = 'none';
-                    }}
-                  />
-                  <div>
-                    <h4 className="text-2xl font-bold">{selectedCharacter.name}</h4>
-                    <div className="flex items-center gap-2 mt-1">
-                      <div className="flex items-center gap-1">
-                        {getRarityStars(selectedCharacter.rarity)}
-                      </div>
-                      <span className="text-white/80">•</span>
-                      <span className="text-white/90">Level {selectedCharacter.level}</span>
-                      <span className="text-white/80">•</span>
-                      <span className="text-white/90">C{selectedCharacter.constellation}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-6 bg-white dark:bg-gray-800">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Weapon Details */}
-                  {selectedCharacter.weapon && (
-                    <div className="space-y-4">
-                      <h5 className="font-semibold text-lg flex items-center gap-2">
-                        <Sword className="h-5 w-5" />
-                        Weapon Details
-                      </h5>
-                      <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                        <div className="flex items-center gap-3 mb-3">
-                          <img
-                            src={selectedCharacter.weapon.icon}
-                            alt={selectedCharacter.weapon.name}
-                            className="w-12 h-12 rounded border"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).style.display = 'none';
-                            }}
-                          />
-                          <div>
-                            <div className="font-medium">{selectedCharacter.weapon.name || 'Unknown Weapon'}</div>
-                            <div className="flex items-center gap-1">
-                              {getRarityStars(selectedCharacter.weapon.rarity).slice(0, selectedCharacter.weapon.rarity)}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-3 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-gray-600 dark:text-gray-400">Level:</span>
-                            <span className="font-medium">{selectedCharacter.weapon.level}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600 dark:text-gray-400">Refinement:</span>
-                            <span className="font-medium">R{selectedCharacter.weapon.refinement || 1}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600 dark:text-gray-400">Base ATK:</span>
-                            <span className="font-medium">{selectedCharacter.weapon.baseAttack}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600 dark:text-gray-400">Ascension:</span>
-                            <span className="font-medium">{selectedCharacter.weapon.ascension || 0}</span>
-                          </div>
-                        </div>
-                        {selectedCharacter.weapon.subStat && (
-                          <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
-                            <div className="flex justify-between">
-                              <span className="text-gray-600 dark:text-gray-400">Sub Stat:</span>
-                              <span className="font-medium">
-                                {selectedCharacter.weapon.subStat.name}: {selectedCharacter.weapon.subStat.value}
-                              </span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Artifact Details */}
-                  {selectedCharacter.artifacts && selectedCharacter.artifacts.length > 0 && (
-                    <div className="space-y-4">
-                      <h5 className="font-semibold text-lg flex items-center gap-2">
-                        <Shield className="h-5 w-5" />
-                        Artifacts ({selectedCharacter.artifacts.length})
-                      </h5>
-                      <div className="space-y-3">
-                        {selectedCharacter.artifacts.map((artifact: any, index: number) => (
-                          <div key={index} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
-                            <div className="flex items-center gap-3">
-                              <img
-                                src={artifact.icon}
-                                alt={artifact.type}
-                                className="w-10 h-10 rounded border"
-                                onError={(e) => {
-                                  (e.target as HTMLImageElement).style.display = 'none';
-                                }}
-                              />
-                              <div className="flex-1">
-                                <div className="flex items-center justify-between">
-                                  <span className="font-medium capitalize">{artifact.type}</span>
-                                  <div className="flex items-center gap-1">
-                                    <span className="text-sm font-bold text-purple-600">+{artifact.level}</span>
-                                    {getRarityStars(artifact.rarity).slice(0, artifact.rarity)}
-                                  </div>
-                                </div>
-                                <div className="text-sm text-gray-600 dark:text-gray-400">
-                                  {artifact.setName}
-                                </div>
-                                <div className="text-sm font-medium mt-1">
-                                  {artifact.mainStat?.name}: {artifact.mainStat?.value}
-                                </div>
-                                {artifact.subStats && artifact.subStats.length > 0 && (
-                                  <div className="text-xs text-gray-500 mt-1">
-                                    {artifact.subStats.map((sub: any, subIndex: number) => (
-                                      <span key={subIndex} className="mr-2">
-                                        {sub.name}: {sub.value}
-                                      </span>
-                                    ))}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Talents */}
-                {selectedCharacter.talents && selectedCharacter.talents.length > 0 && (
-                  <div className="mt-6 space-y-4">
-                    <h5 className="font-semibold text-lg flex items-center gap-2">
-                      <Crown className="h-5 w-5" />
-                      Talents & Constellations
-                    </h5>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                        <h6 className="font-medium mb-2">Skills</h6>
-                        <div className="space-y-2">
-                          {selectedCharacter.talents.filter((t: any) => t.type === 'skill').map((talent: any, index: number) => (
-                            <div key={index} className="flex justify-between items-center">
-                              <span className="text-sm">Skill {index + 1}:</span>
-                              <span className="font-bold text-blue-600">Level {talent.level}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                        <h6 className="font-medium mb-2">Constellations</h6>
-                        <div className="flex items-center gap-2">
-                          <Gem className="h-4 w-4 text-yellow-500" />
-                          <span className="font-bold text-yellow-600">
-                            C{selectedCharacter.constellation} Unlocked
-                          </span>
-                        </div>
-                        {selectedCharacter.talents.filter((t: any) => t.type === 'constellation').length > 0 && (
-                          <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                            {selectedCharacter.talents.filter((t: any) => t.type === 'constellation').length} constellations active
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Analysis Button */}
-                <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-                  <div className="flex gap-3">
-                    <Button 
-                      onClick={() => analyzeCharacter(selectedCharacter)}
-                      disabled={loading}
-                      className="flex-1"
-                      size="lg"
-                    >
-                      <BarChart3 className="h-5 w-5 mr-2" />
-                      {loading ? 'Analyzing...' : 'AI Analysis (Backend)'}
-                    </Button>
-                    <Button 
-                      onClick={() => analyzeCharacterStats(selectedCharacter)}
-                      disabled={loading}
-                      variant="outline"
-                      size="lg"
-                      className="flex-1"
-                    >
-                      <Target className="h-5 w-5 mr-2" />
-                      Quick Stats Analysis
-                    </Button>
-                  </div>
-                  <p className="text-sm text-gray-500 mt-2 text-center">
-                    Try AI Analysis first. If it fails, Quick Stats provides a reliable client-side alternative.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
         </CardContent>
       </Card>
 
       {/* Analysis Results */}
-      {selectedCharacter && analysisResult && (
+      {analysisResult && (
         <Card className="mt-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -744,7 +562,7 @@ export default function CharacterAnalysisSection({ characters, userUID }: Charac
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {analysisResult.recommendations.map((rec: any, index: number) => (
+                      {analysisResult.recommendations.map((rec, index: number) => (
                         <div key={index} className={`p-4 rounded-lg border-l-4 ${
                           rec.priority === 'HIGH' ? 'border-red-500 bg-red-50 dark:bg-red-900/20' :
                           rec.priority === 'MEDIUM' ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20' :
