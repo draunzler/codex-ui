@@ -40,6 +40,7 @@ export default function GenshinAssistant() {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [uidInput, setUidInput] = useState('');
   const [selectedCharacterDetails, setSelectedCharacterDetails] = useState<CharacterResponse | null>(null);
+  const [refreshSuccess, setRefreshSuccess] = useState<string | null>(null);
   
   // Ref for the Start Your Journey section
   const startJourneyRef = React.useRef<HTMLDivElement>(null);
@@ -78,6 +79,7 @@ export default function GenshinAssistant() {
     
     setLoading(true);
     setError(null);
+    setRefreshSuccess(null); // Clear any previous success messages
     
     try {
       const [userResponse, charactersResponse] = await Promise.all([
@@ -122,9 +124,58 @@ export default function GenshinAssistant() {
     }
   };
 
-  const refreshData = () => {
-    if (userUID) {
-      loadUserData(userUID);
+  const refreshData = async () => {
+    if (!userUID) return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Call the refresh API endpoint
+      const refreshResponse = await genshinAPI.refreshUserData(parseInt(userUID));
+      
+      // Show success message briefly
+      console.log('Refresh started:', refreshResponse.message);
+      
+      // Wait a moment for the background refresh to process
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Reload the data
+      await loadUserData(userUID);
+      
+      // Clear any previous errors on successful refresh
+      setError(null);
+      
+      // Show success message
+      setRefreshSuccess('Data refreshed successfully!');
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setRefreshSuccess(null);
+      }, 3000);
+      
+    } catch (err: unknown) {
+      console.error('Error refreshing data:', err);
+      
+      // Handle different types of errors
+      let errorMessage = 'Unknown error occurred';
+      
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else if (typeof err === 'object' && err !== null && 'response' in err) {
+        const response = (err as any).response;
+        if (response?.status === 429) {
+          errorMessage = 'Data was refreshed recently. Please wait a few minutes before trying again.';
+        } else if (response?.status === 404) {
+          errorMessage = 'User profile not found. Please check your UID.';
+        } else if (response?.data?.detail) {
+          errorMessage = response.data.detail;
+        }
+      }
+      
+      setError(`Failed to refresh data: ${errorMessage}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -134,6 +185,7 @@ export default function GenshinAssistant() {
     setUserUID('');
     setUidInput('');
     setError(null);
+    setRefreshSuccess(null);
     setLoading(false);
     setShowCharacterDrawer(false);
     setShowProfileDropdown(false);
@@ -141,6 +193,7 @@ export default function GenshinAssistant() {
 
   const handleUIDSubmit = () => {
     if (uidInput) {
+      setRefreshSuccess(null); // Clear any previous success messages
       loadUserData(uidInput);
     }
   };
@@ -669,6 +722,24 @@ export default function GenshinAssistant() {
                     )}
                   </div>
                 )}
+                
+                {refreshSuccess && (
+                  <div className="mt-8 p-8 bg-gradient-to-r from-soft-green/20 via-soft-green/10 to-soft-green/20 border-2 border-success-green/40 rounded-2xl">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-success-green to-emerald-500 rounded-full flex items-center justify-center shadow-lg">
+                        <RefreshCw className="h-6 w-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-dark-charcoal font-bold text-xl">
+                          {refreshSuccess}
+                        </p>
+                        <p className="text-dark-charcoal/70 text-sm">
+                          Your character data has been updated with the latest information from Genshin Impact.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -760,7 +831,7 @@ export default function GenshinAssistant() {
                 disabled={loading}
               >
                 <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-                <span className="hidden sm:inline">Refresh</span>
+                <span className="hidden sm:inline">{loading ? 'Refreshing...' : 'Refresh'}</span>
               </Button>
 
               {/* Character Button */}
@@ -894,6 +965,25 @@ export default function GenshinAssistant() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-6">
+        {/* Success Message */}
+        {refreshSuccess && (
+          <div className="mb-6 p-4 bg-gradient-to-r from-soft-green/20 via-soft-green/10 to-soft-green/20 border-2 border-success-green/40 rounded-xl">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-gradient-to-br from-success-green to-emerald-500 rounded-full flex items-center justify-center shadow-md">
+                <RefreshCw className="h-4 w-4 text-white" />
+              </div>
+              <div className="flex-1">
+                <p className="text-dark-charcoal font-semibold">
+                  {refreshSuccess}
+                </p>
+                <p className="text-dark-charcoal/70 text-sm">
+                  Your character data has been updated with the latest information.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+        
         <Tabs defaultValue="ai-assistant" className="space-y-6">
           <TabsList className="grid w-full grid-cols-3 bg-cream-white/90 backdrop-blur-sm p-1 rounded-xl border border-gray-200 shadow-lg">
             <TabsTrigger 
@@ -1446,10 +1536,11 @@ export default function GenshinAssistant() {
                         </p>
                         <Button 
                           onClick={refreshData}
+                          disabled={loading}
                           className="mt-6 bg-lime-accent hover:bg-lime-accent/90 text-dark-charcoal"
                         >
-                          <RefreshCw className="h-4 w-4 mr-2" />
-                          Refresh Data
+                          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                          {loading ? 'Refreshing...' : 'Refresh Data'}
                         </Button>
                       </div>
                     )}
