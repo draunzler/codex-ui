@@ -9,6 +9,16 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'enka.network',
+        port: '',
+        pathname: '/ui/**',
+      },
+    ],
+  },
 };
 
 export default nextConfig;
